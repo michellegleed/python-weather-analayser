@@ -101,7 +101,7 @@ def generate_overview(daily_forecast_data):
 
     ave_max_celcius = convert_f_to_c(ave_max)
 
-    return f"{len(daily_forecast_data)} Day Overview \n \n {'':>5} The lowest temperature will be {min_celcius}, and will occur on {convert_date(min_date)}.\n \n {'':>5} The highest temperature will be {format_temperature(max_celcius)}, and will occur on {convert_date(max_date)}.\n \n {'':>5} The average low this week is {format_temperature(ave_min_celcius)}. \n \n {'':>5} The average high this week is {format_temperature(ave_max_celcius)}. \n \n \n"
+    return f"{len(daily_forecast_data)} Day Overview\n {'':>3}The lowest temperature will be {min_celcius}, and will occur on {convert_date(min_date)}.\n{'':>3} The highest temperature will be {format_temperature(max_celcius)}, and will occur on {convert_date(max_date)}.\n{'':>3} The average low this week is {format_temperature(ave_min_celcius)}.\n{'':>3} The average high this week is {format_temperature(ave_max_celcius)}.\n\n"
     
     
 
@@ -165,7 +165,7 @@ def generate_summary(daily_forecast_data):
         # print()
         # print()
 
-        formatted_day = f"-------- {formatted_date} -------- \n \n Minimum Temperature: {format_temperature(min_temp_celcius)} \n \n Maximum Temperature:  {format_temperature(max_temp_celcius)} \n \n Daytime: {day_desc} \n \n {'':>5}Chance of rain: {day_rain_probability}% \n \n Nighttime: {night_desc} \n \n {'':>5}Chance of rain: {night_rain_probability}% \n \n \n"    
+        formatted_day = f"-------- {formatted_date} --------\nMinimum Temperature: {format_temperature(min_temp_celcius)}\nMaximum Temperature: {format_temperature(max_temp_celcius)}\nDaytime: {day_desc}\n{'':>3} Chance of rain:  {day_rain_probability}%\nNighttime: {night_desc}\n{'':>3} Chance of rain:  {night_rain_probability}%\n\n"    
         
         output += formatted_day
     
@@ -200,8 +200,8 @@ def process_weather(forecast_file):
 
 
 
-# if __name__ == "__main__":
-#     print(process_weather("data/forecast_5days_a.json"))
+if __name__ == "__main__":
+    print(process_weather("data/forecast_5days_a.json"))
 
 
 
