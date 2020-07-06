@@ -52,23 +52,6 @@ def calculate_mean(total, num_items):
     """
     return round(total / num_items, 1)
 
-
-def process_weather(forecast_file):
-    """Converts raw weather data into meaningful text.
-
-    Args:
-        forecast_file: A string representing the file path to a file
-            containing raw weather data.
-    Returns:
-        A string containing the processed and formatted weather data.
-    """
-
-    with open(forecast_file) as json_file:
-        json_data = json.load(json_file)
-        daily_forecast_data = json_data["DailyForecasts"]
-        
-        return daily_forecast_data
-
 def generate_overview(daily_forecast_data):
     min_temps = {}  
     max_temps = {}
@@ -111,74 +94,121 @@ def generate_overview(daily_forecast_data):
         else:
             continue
     
-    min_celcius = convert_f_to_c(min_temp)
+    min_celcius = format_temperature(convert_f_to_c(min_temp))
     max_celcius = convert_f_to_c(max_temp)
 
-    print(f"{len(daily_forecast_data)} Day Overview")
-
-    print(f"{'':>10} The lowest temperature will be {format_temperature(min_celcius)}, and will occur on {convert_date(min_date)}.") 
-    print()
-    
-    print(f"{'':>10} The highest temperature will be {format_temperature(max_celcius)}, and will occur on {convert_date(max_date)}.")
-    print()
-
     ave_min_celcius = convert_f_to_c(ave_min)
+
     ave_max_celcius = convert_f_to_c(ave_max)
 
-    print(f"{'':>10} The average low this week is {format_temperature(ave_min_celcius)}")
-    print()
+    return f"{len(daily_forecast_data)} Day Overview \n \n {'':>5} The lowest temperature will be {min_celcius}, and will occur on {convert_date(min_date)}.\n \n {'':>5} The highest temperature will be {format_temperature(max_celcius)}, and will occur on {convert_date(max_date)}.\n \n {'':>5} The average low this week is {format_temperature(ave_min_celcius)}. \n \n {'':>5} The average high this week is {format_temperature(ave_max_celcius)}. \n \n \n"
+    
+    
 
-    print(f"{'':>10} The average high this week is {format_temperature(ave_max_celcius)}")
-    print()
-    print()
+    
+    
+    # print(f"")
+    # print()
+
+    
+
+    # print(f"{'':>10} The average low this week is {format_temperature(ave_min_celcius)}")
+    # print()
+
+    # print(f"{'':>10} The average high this week is {format_temperature(ave_max_celcius)}")
+    # print()
+    # print()
 
 
 
     
-def generate_five_day_summary(daily_forecast_data):
+def generate_summary(daily_forecast_data):
+
+    output = ""
+
     for day in daily_forecast_data:
         iso_date = day["Date"]
         formatted_date = convert_date(iso_date)
-        print(f"-------- {formatted_date} --------")
-        print()
+        # print(f"-------- {formatted_date} --------")
+        # print()
 
         min_temp_farenheit = day["Temperature"]["Minimum"]["Value"]
         min_temp_celcius = convert_f_to_c(min_temp_farenheit)
-        print("Minimum Temperature:", format_temperature(min_temp_celcius))
-        print()
+        
+        # print("Minimum Temperature:", format_temperature(min_temp_celcius))
+        # print()
 
         max_temp_farenheit = day["Temperature"]["Maximum"]["Value"]
         max_temp_celcius = convert_f_to_c(max_temp_farenheit)
-        print("Minimum Temperature:", format_temperature(max_temp_celcius))
-        print()
+        
+        # print("Minimum Temperature:", format_temperature(max_temp_celcius))
+        # print()
 
         day_desc = day["Day"]["LongPhrase"]
-        print("Daytime:", day_desc)
-        print()
+        
+        # print("Daytime:", day_desc)
+        # print()
 
         day_rain_probability = day["Day"]["RainProbability"]
-        print(f"{'':>5}Chance of rain: {day_rain_probability}%")
-        print()
+        
+        # print(f"{'':>5}Chance of rain: {day_rain_probability}%")
+        # print()
 
         night_desc = day["Night"]["LongPhrase"]
-        print("Nighttime:", night_desc)
-        print()
+        
+        # print("Nighttime:", night_desc)
+        # print()
 
-        night_rain_probability = day["Day"]["RainProbability"]
-        print(f"{'':>5}Chance of rain: {night_rain_probability}%")
-        print()
-        print()
+        night_rain_probability = day["Night"]["RainProbability"]
+        
+        # print(f"{'':>5}Chance of rain: {night_rain_probability}%")
+        # print()
+        # print()
+
+        formatted_day = f"-------- {formatted_date} -------- \n \n Minimum Temperature: {format_temperature(min_temp_celcius)} \n \n Maximum Temperature:  {format_temperature(max_temp_celcius)} \n \n Daytime: {day_desc} \n \n {'':>5}Chance of rain: {day_rain_probability}% \n \n Nighttime: {night_desc} \n \n {'':>5}Chance of rain: {night_rain_probability}% \n \n \n"    
+        
+        output += formatted_day
+    
+    return output
 
 
-if __name__ == "__main__":
-    print(process_weather("data/forecast_5days_a.json"))
+def process_weather(forecast_file):
+    """Converts raw weather data into meaningful text.
+
+    Args:
+        forecast_file: A string representing the file path to a file
+            containing raw weather data.
+    Returns:
+        A string containing the processed and formatted weather data.
+    """
+
+    with open(forecast_file) as json_file:
+        json_data = json.load(json_file)
+        daily_forecast_data = json_data["DailyForecasts"]
+        
+        overview = generate_overview(daily_forecast_data)
+        summary = generate_summary(daily_forecast_data)
+
+        # print(overview)
+        # print(summary)
+
+        output = overview + summary
+
+        print(output)
+
+        return output
+
+
+
+# if __name__ == "__main__":
+#     print(process_weather("data/forecast_5days_a.json"))
 
 
 
 # convert_f_to_c(37.0)
 # calculate_mean(25, 2)
 
-weather_forecast = process_weather("data/forecast_10days.json")
-generate_overview(weather_forecast)
-generate_five_day_summary(weather_forecast)
+weather_forecast = process_weather("data/forecast_5days_a.json")
+# generate_overview(weather_forecast)
+# generate_summary(weather_forecast)
 
