@@ -26,14 +26,19 @@ def convert_date(iso_string):
 
 
 def convert_f_to_c(temp_in_farenheit):
-    """Converts an temperature from farenheit to celcius
+    """Converts a temperature from farenheit to celcius
 
     Args:
         temp_in_farenheit: integer representing a temperature.
     Returns:
         An integer representing a temperature in degrees celcius.
     """
-    pass
+
+    celcius = (temp_in_farenheit - 32) * 5/9
+    # print(celcius)
+    # print(round(celcius))
+
+    return round(celcius, 1)
 
 
 def calculate_mean(total, num_items):
@@ -45,7 +50,8 @@ def calculate_mean(total, num_items):
     Returns:
         An integer representing the mean of the numbers.
     """
-    pass
+    print(total/num_items)
+    return int(total / num_items)
 
 
 def process_weather(forecast_file):
@@ -57,13 +63,42 @@ def process_weather(forecast_file):
     Returns:
         A string containing the processed and formatted weather data.
     """
-    pass
+
+    with open(forecast_file) as json_file:
+        json_data = json.load(json_file)
+        daily_forecast_data = json_data["DailyForecasts"]
+        return daily_forecast_data
+
+    
+def generate_five_day_summary(daily_forecast_data):
+    for day in daily_forecast_data:
+        iso_date = day["Date"]
+        formatted_date = convert_date(iso_date)
+        print(formatted_date)
+
+        min_temp_farenheit = day["Temperature"]["Minimum"]["Value"]
+        min_temp_celcius = convert_f_to_c(min_temp_farenheit)
+        print(min_temp_celcius)
+
+        max_temp_farenheit = day["Temperature"]["Maximum"]["Value"]
+        max_temp_celcius = convert_f_to_c(max_temp_farenheit)
+        print(max_temp_celcius)
+
+        day_desc = day["Day"]["LongPhrase"]
+        print(day_desc)
+
+        night_desc = day["Night"]["LongPhrase"]
+        print(night_desc)
 
 
-if __name__ == "__main__":
-    print(process_weather("data/forecast_5days_a.json"))
+# if __name__ == "__main__":
+    # print(process_weather("data/forecast_5days_a.json"))
 
 
 
+# convert_f_to_c(37.0)
+# calculate_mean(25, 2)
 
+weather_forecast = process_weather("data/forecast_5days_a.json")
+generate_five_day_summary(weather_forecast)
 
