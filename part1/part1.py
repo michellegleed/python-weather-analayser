@@ -50,8 +50,7 @@ def calculate_mean(total, num_items):
     Returns:
         An integer representing the mean of the numbers.
     """
-    print(total/num_items)
-    return int(total / num_items)
+    return round(total / num_items, 1)
 
 
 def process_weather(forecast_file):
@@ -67,38 +66,119 @@ def process_weather(forecast_file):
     with open(forecast_file) as json_file:
         json_data = json.load(json_file)
         daily_forecast_data = json_data["DailyForecasts"]
+        
         return daily_forecast_data
+
+def generate_overview(daily_forecast_data):
+    min_temps = {}  
+    max_temps = {}
+
+    sum_of_mins = 0
+    sum_of_maxs = 0
+
+    for day in daily_forecast_data:
+        iso_date = day["Date"]
+        min = day["Temperature"]["Minimum"]["Value"]
+        max = day["Temperature"]["Maximum"]["Value"]
+
+        sum_of_mins += min
+        sum_of_maxs += max
+
+        min_temps[iso_date] = min
+        max_temps[iso_date] = max
+    
+    ave_min = calculate_mean(sum_of_mins, len(daily_forecast_data))
+
+    ave_max = calculate_mean(sum_of_maxs, len(daily_forecast_data))
+
+    min_temp = 100
+    min_date = ""
+
+    max_temp = 0
+    max_date = ""
+
+    for date, temp in min_temps.items():
+        if temp < min_temp:
+            min_temp = temp
+            min_date = date
+        else:
+            continue
+
+    for date, temp in max_temps.items():
+        if temp > max_temp:
+            max_temp = temp
+            max_date = date
+        else:
+            continue
+    
+    min_celcius = convert_f_to_c(min_temp)
+    max_celcius = convert_f_to_c(max_temp)
+
+    print(f"{len(daily_forecast_data)} Day Overview")
+
+    print(f"{'':>10} The lowest temperature will be {format_temperature(min_celcius)}, and will occur on {convert_date(min_date)}.") 
+    print()
+    
+    print(f"{'':>10} The highest temperature will be {format_temperature(max_celcius)}, and will occur on {convert_date(max_date)}.")
+    print()
+
+    ave_min_celcius = convert_f_to_c(ave_min)
+    ave_max_celcius = convert_f_to_c(ave_max)
+
+    print(f"{'':>10} The average low this week is {format_temperature(ave_min_celcius)}")
+    print()
+
+    print(f"{'':>10} The average high this week is {format_temperature(ave_max_celcius)}")
+    print()
+    print()
+
+
 
     
 def generate_five_day_summary(daily_forecast_data):
     for day in daily_forecast_data:
         iso_date = day["Date"]
         formatted_date = convert_date(iso_date)
-        print(formatted_date)
+        print(f"-------- {formatted_date} --------")
+        print()
 
         min_temp_farenheit = day["Temperature"]["Minimum"]["Value"]
         min_temp_celcius = convert_f_to_c(min_temp_farenheit)
-        print(min_temp_celcius)
+        print("Minimum Temperature:", format_temperature(min_temp_celcius))
+        print()
 
         max_temp_farenheit = day["Temperature"]["Maximum"]["Value"]
         max_temp_celcius = convert_f_to_c(max_temp_farenheit)
-        print(max_temp_celcius)
+        print("Minimum Temperature:", format_temperature(max_temp_celcius))
+        print()
 
         day_desc = day["Day"]["LongPhrase"]
-        print(day_desc)
+        print("Daytime:", day_desc)
+        print()
+
+        day_rain_probability = day["Day"]["RainProbability"]
+        print(f"{'':>5}Chance of rain: {day_rain_probability}%")
+        print()
 
         night_desc = day["Night"]["LongPhrase"]
-        print(night_desc)
+        print("Nighttime:", night_desc)
+        print()
+
+        night_rain_probability = day["Day"]["RainProbability"]
+        print(f"{'':>5}Chance of rain: {night_rain_probability}%")
+        print()
+        print()
 
 
-# if __name__ == "__main__":
-    # print(process_weather("data/forecast_5days_a.json"))
+if __name__ == "__main__":
+    print(process_weather("data/forecast_5days_a.json"))
 
 
 
 # convert_f_to_c(37.0)
 # calculate_mean(25, 2)
 
-weather_forecast = process_weather("data/forecast_5days_a.json")
+weather_forecast = process_weather("data/forecast_10days.json")
+generate_overview(weather_forecast)
 generate_five_day_summary(weather_forecast)
 
