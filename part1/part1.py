@@ -168,8 +168,6 @@ def process_weather(forecast_file):
 
         output = overview + summary
 
-        # print(output)
-
         return output
 
 
@@ -231,7 +229,8 @@ def choose_weather_report():
 if __name__ == "__main__":
     print(process_weather("data/forecast_5days_a.json"))
 
-### hard-coded function calls for processing and exporting the 5 day (a) weather report...
+
+### NOTE: hard-coded function calls for processing and exporting the 5 day (a) weather report...
 
 forecast_report = process_weather("data/forecast_5days_a.json")
 
@@ -242,7 +241,7 @@ export_as_text_file(forecast_report, "saved_weather_reports/perth_weather_summar
 print(f" >> This weather report has been (hopefully) saved to this directory: \n         part1/saved_weather_reports/perth_weather_summary.txt")
 
 
-### asking for user input to generate the weather reports...
+### NOTE: asking for user input to generate the weather reports (commented out so it's quicker for Hayley to run her tests)...
 
 # users_chosen_weather_forecast = choose_weather_report()
 
