@@ -11,7 +11,9 @@ def format_temperature(temp):
     Returns:
         A string contain the temperature and 'degrees celcius.'
     """
+
     return f"{temp}{DEGREE_SYBMOL}"
+
 
 def convert_date(iso_string):
     """Converts and ISO formatted date into a human readable format.
@@ -21,6 +23,7 @@ def convert_date(iso_string):
     Returns:
         A date formatted like: Weekday Date Month Year
     """
+
     d = datetime.strptime(iso_string, "%Y-%m-%dT%H:%M:%S%z")
     return d.strftime('%A %d %B %Y')
 
@@ -35,8 +38,6 @@ def convert_f_to_c(temp_in_farenheit):
     """
 
     celcius = (temp_in_farenheit - 32) * 5/9
-    # print(celcius)
-    # print(round(celcius))
 
     return round(celcius, 1)
 
@@ -50,9 +51,18 @@ def calculate_mean(total, num_items):
     Returns:
         An integer representing the mean of the numbers.
     """
+
     return round(total / num_items, 1)
 
+
 def generate_overview(daily_forecast_data):
+    """ Generates overview of n number of days in the json data.
+    Args:
+        daily_forecast_data: the weather data in json format for a given number of days.
+    Returns:
+        A formatted string.
+    """
+
     min_temps = {}  
     max_temps = {}
 
@@ -102,68 +112,35 @@ def generate_overview(daily_forecast_data):
     ave_max_celcius = convert_f_to_c(ave_max)
 
     return f"{len(daily_forecast_data)} Day Overview\n {'':>3}The lowest temperature will be {min_celcius}, and will occur on {convert_date(min_date)}.\n{'':>3} The highest temperature will be {format_temperature(max_celcius)}, and will occur on {convert_date(max_date)}.\n{'':>3} The average low this week is {format_temperature(ave_min_celcius)}.\n{'':>3} The average high this week is {format_temperature(ave_max_celcius)}.\n\n"
-    
-    
-
-    
-    
-    # print(f"")
-    # print()
-
-    
-
-    # print(f"{'':>10} The average low this week is {format_temperature(ave_min_celcius)}")
-    # print()
-
-    # print(f"{'':>10} The average high this week is {format_temperature(ave_max_celcius)}")
-    # print()
-    # print()
-
-
 
     
 def generate_summary(daily_forecast_data):
+    """ Generates a daily weather summary for each day in the given weather data.
+    Args:
+        daily_forecast_data: the weather data in json format for a given number of days.
+    Returns:
+        A formatted string.
+    """
 
     output = ""
 
     for day in daily_forecast_data:
         iso_date = day["Date"]
         formatted_date = convert_date(iso_date)
-        # print(f"-------- {formatted_date} --------")
-        # print()
 
         min_temp_farenheit = day["Temperature"]["Minimum"]["Value"]
         min_temp_celcius = convert_f_to_c(min_temp_farenheit)
-        
-        # print("Minimum Temperature:", format_temperature(min_temp_celcius))
-        # print()
 
         max_temp_farenheit = day["Temperature"]["Maximum"]["Value"]
         max_temp_celcius = convert_f_to_c(max_temp_farenheit)
-        
-        # print("Minimum Temperature:", format_temperature(max_temp_celcius))
-        # print()
 
         day_desc = day["Day"]["LongPhrase"]
-        
-        # print("Daytime:", day_desc)
-        # print()
 
         day_rain_probability = day["Day"]["RainProbability"]
-        
-        # print(f"{'':>5}Chance of rain: {day_rain_probability}%")
-        # print()
 
         night_desc = day["Night"]["LongPhrase"]
-        
-        # print("Nighttime:", night_desc)
-        # print()
 
         night_rain_probability = day["Night"]["RainProbability"]
-        
-        # print(f"{'':>5}Chance of rain: {night_rain_probability}%")
-        # print()
-        # print()
 
         formatted_day = f"-------- {formatted_date} --------\nMinimum Temperature: {format_temperature(min_temp_celcius)}\nMaximum Temperature: {format_temperature(max_temp_celcius)}\nDaytime: {day_desc}\n{'':>3} Chance of rain:  {day_rain_probability}%\nNighttime: {night_desc}\n{'':>3} Chance of rain:  {night_rain_probability}%\n\n"    
         
@@ -189,26 +166,90 @@ def process_weather(forecast_file):
         overview = generate_overview(daily_forecast_data)
         summary = generate_summary(daily_forecast_data)
 
-        # print(overview)
-        # print(summary)
-
         output = overview + summary
 
-        print(output)
+        # print(output)
 
         return output
 
+
+def export_as_text_file(weather_forecast, new_file_path):
+    """Exports a pre-generated, pre-formatted weather forecast to a .txt file.
+
+    Args:
+        weather_forecast: A formatted string containing the weather report
+        new_file_path: A string that represents the destination and name of the new .txt file
+    """
+
+    with open(new_file_path, 'w+') as txt_file:
+        txt_file.write(weather_forecast)
+
+
+def prompt_user_to_save(forecast_report):
+    """Asks user if they would like to save the weather report as a .txt file using the input() function. If response is "y" then asks for a filename and saves the file to the saved_weather_reports directory.
+    """
+
+    export_required = input("Would you like to save this weather report as a .txt file? (Y/N) ")
+    if export_required == "y" or export_required == "Y":
+        print()
+        file_name = input("Enter a name for the file (or leave this empty to cancel the file export) ")
+        if file_name != "":
+            txt_file_path = f"saved_weather_reports/{file_name}.txt"
+            export_as_text_file(forecast_report, txt_file_path)
+            print()
+            print(f" >> {file_name}.txt was (hopefully) saved to this directory: \n         part1/{txt_file_path}")
+            print()
+            print()
+
+def choose_weather_report():
+    """Asks user which weather report they would like to see. Prints requested report to the console and also returns it.
+    """
+
+    print()
+    print("Which weather report would you like to see?")
+    print()
+    print("5 Day Forecast from June 19 (A)")
+    print("5 Day Forecast from June 22 (B)")
+    print("8 Day Forecast from June 19 (C)")
+    print()
+    choice = input("Please choose A, B or C.. ")
+    print()
+    print()
+
+    if choice == "a" or choice =="A":
+        return process_weather("data/forecast_5days_a.json")
+    elif choice == "b" or choice =="B":
+        return process_weather("data/forecast_5days_b.json")
+    elif choice == "c" or choice =="C":
+        return process_weather("data/forecast_10days.json")
+    else:
+        print("Sorry, your choice was not a valid option. Printing option A...")
+        print()
+        return process_weather("data/forecast_5days_a.json")
 
 
 if __name__ == "__main__":
     print(process_weather("data/forecast_5days_a.json"))
 
+### hard-coded function calls for processing and exporting the 5 day (a) weather report...
+
+forecast_report = process_weather("data/forecast_5days_a.json")
+
+# print(forecast_report)
+
+export_as_text_file(forecast_report, "saved_weather_reports/perth_weather_summary.txt")
+
+print(f" >> This weather report has been (hopefully) saved to this directory: \n         part1/saved_weather_reports/perth_weather_summary.txt")
 
 
-# convert_f_to_c(37.0)
-# calculate_mean(25, 2)
+### asking for user input to generate the weather reports...
 
-weather_forecast = process_weather("data/forecast_5days_a.json")
-# generate_overview(weather_forecast)
-# generate_summary(weather_forecast)
+# users_chosen_weather_forecast = choose_weather_report()
+
+# print(users_chosen_weather_forecast)
+
+# prompt_user_to_save(users_chosen_weather_forecast)
+
+print()
+print()
 
