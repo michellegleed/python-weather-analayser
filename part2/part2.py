@@ -82,16 +82,22 @@ def generate_df(forecast_file):
     return data_frame
 
 
-df = generate_df("data/forecast_5days_a.json")
+df = generate_df("data/forecast_10days.json")
 
-# df = {
-#     "min": [123, 132, 654, 345, 125, 498],
-#     "max": [345, 67, 176, 245, 197, 391],
-#     "day": ["M", "T", "W", "T", "F", "S"]
-# }
+fig1 = px.line(df, x="Day", y=["Minimum Temp","Maximum Temp"], title="Daily Minimum and Maximum Temperature Predictions")
 
-fig1 = px.line(df, x="Day", y=["Minimum Temp","Maximum Temp"])
+
+fig2 = px.line(df, x="Day", y=["Minimum Temp","Minimum Real Feel Temp","Minimum Real Feel Shade Temp"], title="Daily Temperature Predictions")
+
+fig1.update_layout(
+    yaxis_title="Temperature (Celcius)",
+    legend_title="Key:"
+)
+
+fig2.update_layout(
+    yaxis_title="Temperature (Celcius)",
+    legend_title="Key:"
+)
+
 fig1.show()
-
-fig2 = px.line(df, x="Day", y=["Minimum Temp","Minimum Real Feel Temp","Minimum Real Feel Shade Temp"])
 fig2.show()
