@@ -30,7 +30,7 @@ def format_temperature(temp):
 
 def generate_df(forecast_file):
 
-    data_frame = {"Time": [], "Temp": [], "Weather_Text": [], "Precipitation": [], "UV_Index": [], "Is_Daytime": []}
+    data_frame = {"Time": [], "Temp": [], "Real_Feel_Temp": [], "Weather_Text": [], "Precipitation": [], "UV_Index": [], "Is_Daytime": []}
 
     with open(forecast_file) as json_file:
         json_data = json.load(json_file)
@@ -42,18 +42,39 @@ def generate_df(forecast_file):
         
         temp = hour["Temperature"]["Metric"]["Value"]
         weather_text = hour["WeatherText"]
+        rf_temp = hour["RealFeelTemperature"]["Metric"]["Value"]
         precipitation = hour["PrecipitationSummary"]["Precipitation"]["Metric"]["Value"]
         uv_index = hour["UVIndex"]
         is_daytime = hour["IsDayTime"]
 
         data_frame["Time"].append(time)
         data_frame["Temp"].append(temp)
+        data_frame["Real_Feel_Temp"].append(rf_temp)
         data_frame["Weather_Text"].append(weather_text)
         data_frame["Precipitation"].append(precipitation)
         data_frame["UV_Index"].append(uv_index)
         data_frame["Is_Daytime"].append(is_daytime)
     
     return data_frame
+
+def create_temperature_box_plots(dataframe):
+    
+    box_plot_df = {
+        "Hour": dataframe["Time"],
+        "Temperature": dataframe["Temp"],
+        "Real Feel Temperature": dataframe["Real_Feel_Temp"]
+        
+    }
+
+    box_fig = px.box(box_plot_df, y=["Temperature", "Real Feel Temperature"]) 
+
+    box_fig.update_layout(
+    yaxis_title="Temperature (Celcius)",
+    xaxis_title="Recorded Temperatures"
+)
+
+    box_fig.show()
+
 
 
 def create_weather_text_chart(dataframe):
@@ -131,5 +152,6 @@ def export_historical_weather_summary(data):
 
           
 df = generate_df("data/historical_24hours_a.json")
+create_temperature_box_plots(df)
 create_weather_text_chart(df)
 export_historical_weather_summary(df)
