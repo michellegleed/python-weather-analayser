@@ -31,15 +31,7 @@ def convert_f_to_c(temp_in_farenheit):
 
 def generate_df(forecast_file):
 
-    data_frame = {
- 
-    }
-
-    list_of_mins = []
-    list_of_maxs = []
-    list_of_days = []
-    list_of_min_rf = []
-    list_of_min_rf_shade = []
+    data_frame = {"Day": [], "Minimum Temp": [], "Maximum Temp": [], "Minimum Real Feel Temp": [], "Minimum Real Feel Shade Temp": []}
 
     with open(forecast_file) as json_file:
         json_data = json.load(json_file)
@@ -47,37 +39,23 @@ def generate_df(forecast_file):
 
     for day in daily_forecast_data:
 
-        iso_date = day["Date"]
-        formatted_date = convert_date(iso_date)
+        date = convert_date(day["Date"])
 
-        min_temp_farenheit = day["Temperature"]["Minimum"]["Value"]
-        min_temp_celcius = convert_f_to_c(min_temp_farenheit)
+        min_temp = convert_f_to_c(day["Temperature"]["Minimum"]["Value"])
 
-        max_temp_farenheit = day["Temperature"]["Maximum"]["Value"]
-        max_temp_celcius = convert_f_to_c(max_temp_farenheit)
+        max_temp = convert_f_to_c(day["Temperature"]["Maximum"]["Value"])
 
-        min_real_feel_farenheit = day["RealFeelTemperature"]["Minimum"]["Value"]
-        min_rf_celcius = convert_f_to_c(min_real_feel_farenheit)
+        min_rf = convert_f_to_c(day["RealFeelTemperature"]["Minimum"]["Value"])
 
-        min_rf_shade_farenheit = day["RealFeelTemperatureShade"]["Minimum"]["Value"]
-        min_rfs_celcius = convert_f_to_c(min_rf_shade_farenheit)
-
-        list_of_mins.append(min_temp_celcius)
-        list_of_maxs.append(max_temp_celcius)
-        list_of_days.append(formatted_date)
-        list_of_min_rf.append(min_rf_celcius)
-        list_of_min_rf_shade.append(min_rfs_celcius)
-        
-        # data_frame["max"] = data_frame["max"].append(max_temp_celcius)
-        # data_frame["day"] = data_frame["day"].append(formatted_date)
+        min_rf_shade = convert_f_to_c(day["RealFeelTemperatureShade"]["Minimum"]["Value"])
     
-    data_frame["Minimum Temp"] = list_of_mins
-    data_frame["Maximum Temp"] = list_of_maxs
-    data_frame["Day"] = list_of_days
-    data_frame["Minimum Real Feel Temp"] = list_of_min_rf
-    data_frame["Minimum Real Feel Shade Temp"] = list_of_min_rf_shade    
+        data_frame["Day"].append(date)
+        data_frame["Minimum Temp"].append(min_temp)
+        data_frame["Maximum Temp"].append(max_temp)
+        data_frame["Minimum Real Feel Temp"].append(min_rf)
+        data_frame["Minimum Real Feel Shade Temp"].append(min_rf_shade)
 
-    print(data_frame)
+    # print(data_frame)
 
     return data_frame
 
