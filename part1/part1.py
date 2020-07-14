@@ -125,14 +125,12 @@ def generate_summary(daily_forecast_data):
     output = ""
 
     for day in daily_forecast_data:
-        iso_date = day["Date"]
-        formatted_date = convert_date(iso_date)
+      
+        date = convert_date(day["Date"])
 
-        min_temp_farenheit = day["Temperature"]["Minimum"]["Value"]
-        min_temp_celcius = convert_f_to_c(min_temp_farenheit)
+        min_temp = convert_f_to_c(day["Temperature"]["Minimum"]["Value"])
 
-        max_temp_farenheit = day["Temperature"]["Maximum"]["Value"]
-        max_temp_celcius = convert_f_to_c(max_temp_farenheit)
+        max_temp = convert_f_to_c(day["Temperature"]["Maximum"]["Value"])
 
         day_desc = day["Day"]["LongPhrase"]
 
@@ -142,7 +140,7 @@ def generate_summary(daily_forecast_data):
 
         night_rain_probability = day["Night"]["RainProbability"]
 
-        formatted_day = f"-------- {formatted_date} --------\nMinimum Temperature: {format_temperature(min_temp_celcius)}\nMaximum Temperature: {format_temperature(max_temp_celcius)}\nDaytime: {day_desc}\n{'':>3} Chance of rain:  {day_rain_probability}%\nNighttime: {night_desc}\n{'':>3} Chance of rain:  {night_rain_probability}%\n\n"    
+        formatted_day = f"-------- {date} --------\nMinimum Temperature: {format_temperature(min_temp)}\nMaximum Temperature: {format_temperature(max_temp)}\nDaytime: {day_desc}\n{'':>3} Chance of rain:  {day_rain_probability}%\nNighttime: {night_desc}\n{'':>3} Chance of rain:  {night_rain_probability}%\n\n"    
         
         output += formatted_day
     
@@ -241,7 +239,7 @@ export_as_text_file(forecast_report, "saved_weather_reports/perth_weather_summar
 print(f" >> This weather report has been (hopefully) saved to this directory: \n         part1/saved_weather_reports/perth_weather_summary.txt")
 
 
-### NOTE: asking for user input to generate the weather reports (commented out so it's quicker for Hayley to run her tests)...
+### NOTE: asking for user input to generate the weather reports)...
 
 # users_chosen_weather_forecast = choose_weather_report()
 
