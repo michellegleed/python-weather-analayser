@@ -37,8 +37,7 @@ def generate_df(forecast_file):
 
     for hour in json_data:
         
-        date_time = hour["LocalObservationDateTime"]
-        time = get_time(date_time)   
+        time = get_time(hour["LocalObservationDateTime"])   
         
         temp = hour["Temperature"]["Metric"]["Value"]
         weather_text = hour["WeatherText"]
@@ -63,7 +62,6 @@ def create_temperature_box_plots(dataframe):
         "Hour": dataframe["Time"],
         "Temperature": dataframe["Temp"],
         "Real Feel Temperature": dataframe["Real_Feel_Temp"]
-        
     }
 
     box_fig = px.box(box_plot_df, y=["Temperature", "Real Feel Temperature"]) 
@@ -71,7 +69,7 @@ def create_temperature_box_plots(dataframe):
     box_fig.update_layout(
     yaxis_title="Temperature (Celcius)",
     xaxis_title="Recorded Temperatures"
-)
+    )
 
     box_fig.show()
 
@@ -105,19 +103,27 @@ def create_weather_text_chart(dataframe):
 
 def export_historical_weather_summary(data):
 
-    min = 100
-    min_index = 0
+    # min = 100
+    # min_index = 0
 
-    max = 0
-    max_index = 0
+    # max = 0
+    # max_index = 0
 
-    for index, temp in enumerate(data["Temp"]):
-        if temp < min:
-            min = temp
-            min_index = index
-        if temp > max:
-            max = temp
-            max_index = index
+    min_temp = min(data["Temp"])
+    max_temp = max(data["Temp"])
+
+    mins = [i for i, x in enumerate(data["Temp"]) if x == min_temp]
+
+    print("min temp was", min_temp)
+    print("mins list =", mins) 
+
+    # for index, temp in enumerate(data["Temp"]):
+    #     if temp < min:
+    #         min = temp
+    #         min_index = index
+    #     if temp > max:
+    #         max = temp
+    #         max_index = index
 
     max_uv = 0
     max_uv_index = 0
@@ -141,14 +147,15 @@ def export_historical_weather_summary(data):
         if daytime:
             num_daylight_hours += 1
 
-    text = f'Min temp was: {format_temperature(min)} at {data["Time"][min_index]}.\nMax temp was: {format_temperature(max)} at {data["Time"][max_index]}.\nTotal rain fall was {total_rain}mm over {hrs_of_rain} hours.\nThe number of daylight hours was {num_daylight_hours}.\nMax UV Index was: {max_uv} at {data["Time"][max_uv_index]}.'
+    # text = f'Min temp was: {format_temperature(min)} at {data["Time"][min_index]}.\nMax temp was: {format_temperature(max)} at {data["Time"][max_index]}.\nTotal rain fall was {total_rain}mm over {hrs_of_rain} hours.\nThe number of daylight hours was {num_daylight_hours}.\nMax UV Index was: {max_uv} at {data["Time"][max_uv_index]}.'
 
     print()
-    print(text)
+    # print(text)
     print()
 
     with open("saved_weather_reports/historical_weather_report.txt", "w+") as report:
-        report.write(text)
+        # report.write(text)
+        pass
 
           
 df = generate_df("data/historical_24hours_a.json")
