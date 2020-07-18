@@ -16,6 +16,7 @@ def convert_date(iso_string):
     d = datetime.strptime(iso_string, "%Y-%m-%dT%H:%M:%S%z")
     return d.strftime('%A %d %B %Y')
 
+
 def convert_f_to_c(temp_in_farenheit):
     """Converts a temperature from farenheit to celcius
 
@@ -29,11 +30,19 @@ def convert_f_to_c(temp_in_farenheit):
 
     return round(celcius, 1)
 
-def generate_df(forecast_file):
+
+def generate_df(filepath):
+    """Takes a json file containing weather data and only the data required to make the graphs and summaries in dictionary format.
+    
+    Args:
+        filepath: A string representing the path of the json file.
+    Returns:
+        A dictionary containing only the measurments required for this program.
+    """
 
     data_frame = {"Day": [], "Minimum Temp": [], "Maximum Temp": [], "Minimum Real Feel Temp": [], "Minimum Real Feel Shade Temp": []}
 
-    with open(forecast_file) as json_file:
+    with open(filepath) as json_file:
         json_data = json.load(json_file)
         daily_forecast_data = json_data["DailyForecasts"]
 

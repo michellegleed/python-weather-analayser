@@ -169,20 +169,23 @@ def process_weather(forecast_file):
         return output
 
 
-def export_as_text_file(weather_forecast, new_file_path):
+def export_as_text_file(forecast_report, new_file_path):
     """Exports a pre-generated, pre-formatted weather forecast to a .txt file.
 
     Args:
-        weather_forecast: A formatted string containing the weather report
+        forecast_report: A formatted string containing the weather report
         new_file_path: A string that represents the destination and name of the new .txt file
     """
 
     with open(new_file_path, 'w+') as txt_file:
-        txt_file.write(weather_forecast)
+        txt_file.write(forecast_report)
 
 
 def prompt_user_to_save(forecast_report):
     """Asks user if they would like to save the weather report as a .txt file using the input() function. If response is "y" then asks for a filename and saves the file to the saved_weather_reports directory.
+
+    Args:
+        forecast_report: A formatted string containing the weather report
     """
 
     export_required = input("Would you like to save this weather report as a .txt file? (Y/N) ")
