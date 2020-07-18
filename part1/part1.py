@@ -103,8 +103,9 @@ def generate_overview(daily_forecast_data):
             max_date = date
         else:
             continue
-    
+
     min_celcius = format_temperature(convert_f_to_c(min_temp))
+    
     max_celcius = convert_f_to_c(max_temp)
 
     ave_min_celcius = convert_f_to_c(ave_min)
