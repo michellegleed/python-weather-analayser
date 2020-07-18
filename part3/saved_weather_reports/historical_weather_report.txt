@@ -1,5 +1,5 @@
-Min temp was: 16.1°C at 23:55.
-Max temp was: 21.1°C at 13:55.
+Min temp was: <built-in function min>°C at 15:55.
+Max temp was: 0°C at 15:55.
 Total rain fall was 0.3mm over 1 hours.
 The number of daylight hours was 10.
 Max UV Index was: 3 at 13:55.
