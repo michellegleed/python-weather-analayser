@@ -17,6 +17,7 @@ def get_time(iso_string):
 
 DEGREE_SYBMOL = u"\N{DEGREE SIGN}C"
 
+
 def format_temperature(temp):
     """Takes a temperature and returns it in string format with the degrees and celcius symbols.
     
@@ -27,6 +28,7 @@ def format_temperature(temp):
     """
 
     return f"{temp}{DEGREE_SYBMOL}"
+
 
 def generate_df(forecast_file):
 
@@ -57,24 +59,23 @@ def generate_df(forecast_file):
     
     return data_frame
 
+
 def create_temperature_box_plots(dataframe):
     
     box_plot_df = {
         "Hour": dataframe["Time"],
         "Temperature": dataframe["Temp"],
         "Real Feel Temperature": dataframe["Real_Feel_Temp"]
-        
     }
 
-    box_fig = px.box(box_plot_df, y=["Temperature", "Real Feel Temperature"]) 
+    box_fig = px.box(box_plot_df, y=["Temperature", "Real Feel Temperature"], title=f"Distribution of Recorded Temperatures (Celcius) in the Past {len(dataframe['Weather_Text'])} Hours") 
 
     box_fig.update_layout(
     yaxis_title="Temperature (Celcius)",
     xaxis_title="Recorded Temperatures"
-)
+    )
 
     box_fig.show()
-
 
 
 def create_weather_text_chart(dataframe):
@@ -118,6 +119,16 @@ def export_historical_weather_summary(data):
         if temp > max:
             max = temp
             max_index = index
+
+    temps = data["Temp"]
+
+    print("temps:", temps)
+
+    print("type of temps:", type(temps))
+
+    min_temp_using_min_method = min(temps)
+
+    print("min temp is ", min_temp_using_min_method)
 
     max_uv = 0
     max_uv_index = 0
