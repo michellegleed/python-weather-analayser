@@ -29,19 +29,24 @@ def format_temperature(temp):
 
     return f"{temp}{DEGREE_SYBMOL}"
 
+def generate_df(filepath):
+    """Takes a json file containing weather data and only the data required to make the graphs and summaries in dictionary format.
+    
+    Args:
+        filepath: A string representing the path of the json file.
+    Returns:
+        A dictionary containing only the measurments required for this program.
+    """
 
-def generate_df(forecast_file):
 
     data_frame = {"Time": [], "Temp": [], "Real_Feel_Temp": [], "Weather_Text": [], "Precipitation": [], "UV_Index": [], "Is_Daytime": []}
 
-    with open(forecast_file) as json_file:
+    with open(filepath) as json_file:
         json_data = json.load(json_file)
 
     for hour in json_data:
         
-        date_time = hour["LocalObservationDateTime"]
-        time = get_time(date_time)   
-        
+        time = get_time(hour["LocalObservationDateTime"])   
         temp = hour["Temperature"]["Metric"]["Value"]
         weather_text = hour["WeatherText"]
         rf_temp = hour["RealFeelTemperature"]["Metric"]["Value"]
@@ -61,14 +66,19 @@ def generate_df(forecast_file):
 
 
 def create_temperature_box_plots(dataframe):
+    """Takes a dictionary of weather data and creates a box plot graph that shows the temperature vs real feel temperature. 
     
+    Args:
+        dataframe: A dictionary of weather measurements.
+    """
+
     box_plot_df = {
         "Hour": dataframe["Time"],
         "Temperature": dataframe["Temp"],
         "Real Feel Temperature": dataframe["Real_Feel_Temp"]
     }
 
-    box_fig = px.box(box_plot_df, y=["Temperature", "Real Feel Temperature"], title=f"Distribution of Recorded Temperatures (Celcius) in the Past {len(dataframe['Weather_Text'])} Hours") 
+    box_fig = px.box(box_plot_df, y=["Temperature", "Real Feel Temperature"], title=f'Recorded Temperatures Over the Past {len(box_plot_df["Hour"])} Hours') 
 
     box_fig.update_layout(
     yaxis_title="Temperature (Celcius)",
@@ -79,6 +89,11 @@ def create_temperature_box_plots(dataframe):
 
 
 def create_weather_text_chart(dataframe):
+    """Takes a dictionary of weather data and creates a bar chart graph that shows the incidence of weather events. 
+    
+    Args:
+        dataframe: A dictionary of weather measurements.
+    """
 
     weather_text_counts = {}
 
@@ -103,56 +118,70 @@ def create_weather_text_chart(dataframe):
 
     weather_text_chart.show()
 
+def format_weather_event_times(dataframe, weather_measurement):
+    """Takes a dictionary of weather data and a parameter that indicates the measurement required.
+    
+    Args:
+        dataframe: A dictionary of weather measurements.
+    Returns:
+        A tuple containing a value correlating to the weather_measurement parameter and a list of hours in which the value occurred.
+    """
+    value_to_match = 0
+    list_of_value_occurrences = []
 
-def export_historical_weather_summary(data):
+    if weather_measurement == "min-temp":
+        value_to_match = min(dataframe["Temp"])
+        list_of_value_occurences = [i for i, x in enumerate(dataframe["Temp"]) if x == value_to_match]
 
-    min = 100
-    min_index = 0
+    elif weather_measurement == "max-temp":
+        value_to_match = max(dataframe["Temp"])
+        list_of_value_occurences = [i for i, x in enumerate(dataframe["Temp"]) if x == value_to_match]
 
-    max = 0
-    max_index = 0
+    elif weather_measurement == "u-v":
+        value_to_match = max(dataframe["UV_Index"])
+        list_of_value_occurences = [i for i, x in enumerate(dataframe["UV_Index"]) if x == value_to_match]
 
-    for index, temp in enumerate(data["Temp"]):
-        if temp < min:
-            min = temp
-            min_index = index
-        if temp > max:
-            max = temp
-            max_index = index
+    else:
+        return         
+    
+    times_values_occurred = [f'{dataframe["Time"][i]}' for i in list_of_value_occurences]
 
-    temps = data["Temp"]
+    formatted_times = f""
 
-    print("temps:", temps)
+    for index, item in enumerate(times_values_occurred):
+        if index != len(times_values_occurred) - 1:
+            formatted_times += f"{item}, "
+        else:
+            formatted_times += f"and {item}"
 
-    print("type of temps:", type(temps))
+    return (value_to_match, formatted_times)
 
-    min_temp_using_min_method = min(temps)
 
-    print("min temp is ", min_temp_using_min_method)
-
-    max_uv = 0
-    max_uv_index = 0
-
-    for index, uv in enumerate(data["UV_Index"]):
-        if uv > max_uv:
-            max_uv = uv
-            max_uv_index = index
+def export_historical_weather_summary(dataframe):
+    """Takes a dictionary of weather data, creates a summary and saves it to a text file.
+    
+    Args:
+        dataframe: A dictionary of weather measurements.
+    """
+    min_temp_times = format_weather_event_times(dataframe, "min-temp")
+    max_temp_times = format_weather_event_times(dataframe, "max-temp")
+    max_uv_times = format_weather_event_times(dataframe, "u-v")
 
     hrs_of_rain = 0
     total_rain = 0
 
-    for precip in data["Precipitation"]:
+    for precip in dataframe["Precipitation"]:
         if precip != 0:
             total_rain += precip
             hrs_of_rain += 1
 
     num_daylight_hours = 0
 
-    for daytime in data["Is_Daytime"]:
+    for daytime in dataframe["Is_Daytime"]:
         if daytime:
             num_daylight_hours += 1
 
-    text = f'Min temp was: {format_temperature(min)} at {data["Time"][min_index]}.\nMax temp was: {format_temperature(max)} at {data["Time"][max_index]}.\nTotal rain fall was {total_rain}mm over {hrs_of_rain} hours.\nThe number of daylight hours was {num_daylight_hours}.\nMax UV Index was: {max_uv} at {data["Time"][max_uv_index]}.'
+    text = f'The minimum temperature was {format_temperature(min_temp_times[0])} at {min_temp_times[1]}.\nThe maximum temperature was {format_temperature(max_temp_times[0])} at {max_temp_times[1]}.\nThe total rain fall was {total_rain}mm over {hrs_of_rain} hours.\nThe number of daylight hours was {num_daylight_hours}.\nThe maximum UV index was: {max_uv_times[0]} at {max_uv_times[1]}.'
 
     print()
     print(text)
@@ -160,6 +189,7 @@ def export_historical_weather_summary(data):
 
     with open("saved_weather_reports/historical_weather_report.txt", "w+") as report:
         report.write(text)
+        pass
 
           
 df = generate_df("data/historical_24hours_a.json")
